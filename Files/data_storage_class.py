@@ -1,5 +1,6 @@
 import os
-from datetime import datetime
+from datetime import datetime,date
+
 
 class SingleFieldRecord:
     # def __int__(self,val):
@@ -7,7 +8,7 @@ class SingleFieldRecord:
     #     return self.val if val is int else raiseExceptions
 
     def __init__(self, *args):
-        self.pkt: datetime = datetime.strptime(args[0], '%Y-%m-%d').date()
+        self.pkt: date = datetime.strptime(args[0],'%Y-%m-%d').date()
         self.max_temperature: int = int(args[1])
         self.mean_temperature: int = int(args[2])
         self.min_temperature: int = int(args[3])
@@ -37,25 +38,29 @@ class SingleFieldRecord:
     #             f'Max Humidity:{self.max_humidity}\n'
     #             f'Min Humidity:{self.min_humidity}')
 
-class LoadAllFile:
-    def __init__(self,folder_path):
-        self.folder_path=folder_path
+#load,read and store all record
+class LRSAllRecord:
+    def __init__(self,relative_path):
+        self.relative_path=relative_path
+        #list to store instances
         self.instance_list=[]
     def read_path(self):
-        files_list = os.listdir(self.folder_path)
+        cwd=os.getcwd()
+        abs_path=os.path.join(cwd,self.relative_path)
+        files_list = os.listdir(abs_path)
         for file_name in files_list:
-            single_file_path = os.path.join(self.folder_path, file_name)
+            single_file_path = os.path.join(abs_path, file_name)
             if os.path.isfile(single_file_path):
                 with open(single_file_path, 'r') as report:
                     # Header line of every file
                     report.readline()
-                    for i in range(1, 31):
-                        record = report.readline().split(',')
+                    for line in report:
+                        record = line.split(',')
                         record = [item.strip() for item in record]
-                        if len(record) <= 1:
+                        if len(record) <= 0:
                             continue
                         else:
-                            updated_record = [0.0 if item == '' else item for item in record]
+                            updated_record = [None if item == '' else item for item in record]
                             single_field_instance = SingleFieldRecord(*updated_record)
                             self.instance_list.append(single_field_instance)
         return self.instance_list
