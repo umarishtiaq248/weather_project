@@ -2,48 +2,55 @@ import os
 from datetime import datetime,date
 
 
-class SingleFieldRecord:
-    # def __int__(self,val):
-    #     self.val=val
-    #     return self.val if val is int else raiseExceptions
+class InstanceRecord:
+    all_record_instance=[]
+    user_required_instance = []
 
+instance_record=InstanceRecord()
+
+class StoreCalculateUserRecords:
     def __init__(self, *args):
-        self.pkt: date = datetime.strptime(args[0],'%Y-%m-%d').date()
-        self.max_temperature: int = int(args[1])
-        self.mean_temperature: int = int(args[2])
-        self.min_temperature: int = int(args[3])
-        self.max_dew_point: int = int(args[4])
-        self.mean_dew_point: int = int(args[5])
-        self.min_dew_point: int = int(args[6])
-        self.max_humidity: int = int(args[7])
-        self.mean_humidity: int = int(args[8])
-        self.min_humidity: int = int(args[9])
-        self.max_sea_level_pressure: float = float(args[10])
-        self.mean_sea_level_pressure: float = float(args[11])
-        self.min_sea_level_pressure: float = float(args[12])
-        self.max_visibility: float = float(args[13])
-        self.mean_visibility: float = float(args[14])
-        self.min_visibility: float = float(args[15])
-        self.max_wind_speed: int = int(args[16])
-        self.mean_wind_speed: int = int(args[17])
-        self.max_gust_speed: int = int(args[18])
-        self.precipitation: float = float(args[19])
-        self.cloud_cover: int = int(args[20])
-        self.events: str = str(args[21])
-        self.wind_dir_degrees: int = int(args[22])
+        self.pkt: date = datetime.strptime(args[0],'%Y-%m-%d').date() if args[0] and 10>=len(args[0])>5 else None
+        self.max_temperature: int = int(args[1]) if args[1] is not None else None
+        self.mean_temperature: int = int(args[2]) if args[2] is not None else None
+        self.min_temperature: int = int(args[3]) if args[3] is not None else None
+        self.max_dew_point: int = int(args[4]) if args[4] is not None else None
+        self.mean_dew_point: int = int(args[5]) if args[5] is not None else None
+        self.min_dew_point: int = int(args[6]) if args[6] is not None else None
+        self.max_humidity: int = int(args[7]) if args[7] is not None else None
+        self.mean_humidity: int = int(args[8]) if args[8] is not None else None
+        self.min_humidity: int = int(args[9]) if args[9] is not None else None
+        self.max_sea_level_pressure: float = float(args[10]) if args[10] is not None else None
+        self.mean_sea_level_pressure: float = float(args[11]) if args[11] is not None else None
+        self.min_sea_level_pressure: float = float(args[12]) if args[12] is not None else None
+        self.max_visibility: float = float(args[13]) if args[13] is not None else None
+        self.mean_visibility: float = float(args[14]) if args[14] is not None else None
+        self.min_visibility: float = float(args[15]) if args[15] is not None else None
+        self.max_wind_speed: int = int(args[16]) if args[16] is not None else None
+        self.mean_wind_speed: int = int(args[17]) if args[17] is not None else None
+        self.max_gust_speed: int = int(args[18]) if args[18] is not None else None
+        self.precipitation: float = float(args[19]) if args[19] is not None else None
+        self.cloud_cover: int = int(args[20]) if args[20] is not None else None
+        self.events: str = str(args[21]) if args[21] is not None else None
+        self.wind_dir_degrees: int = int(args[22]) if args[22] is not None else None
 
-    # def __str__(self):
-    #     return (f'Max temperature:{self.max_temperature}\n'
-    #             f'Min Temperature:{self.min_temperature}\n'
-    #             f'Max Humidity:{self.max_humidity}\n'
-    #             f'Min Humidity:{self.min_humidity}')
+    def user_required_calculations(self,single_instance,*user_input_date):
+        for single_date in user_input_date:
+            try:
+                if single_date[1]=="Y":
+                    if single_date[0].year==single_instance.pkt.year:
+                        instance_record.user_required_instance.append(single_instance)
+                else:
+                    if (single_date[0].year==single_instance.pkt.year) and (single_date[0].month==single_instance.pkt.month):
+                        instance_record.user_required_instance.append(single_instance)
+            except AttributeError as e:
+                pass
 
-#load,read and store all record
-class LRSAllRecord:
+#load and read all record
+class LoadReadAllRecords:
     def __init__(self,relative_path):
         self.relative_path=relative_path
-        #list to store instances
-        self.instance_list=[]
+        self.instance_record=instance_record
     def read_path(self):
         cwd=os.getcwd()
         abs_path=os.path.join(cwd,self.relative_path)
@@ -57,13 +64,12 @@ class LRSAllRecord:
                     for line in report:
                         record = line.split(',')
                         record = [item.strip() for item in record]
-                        if len(record) <= 0:
+                        if len(record) <= 1:
                             continue
                         else:
                             updated_record = [None if item == '' else item for item in record]
-                            single_field_instance = SingleFieldRecord(*updated_record)
-                            self.instance_list.append(single_field_instance)
-        return self.instance_list
+                            single_field_instance = StoreCalculateUserRecords(*updated_record)
+                            self.instance_record.all_record_instance.append(single_field_instance)
 
 class ReportGenerator:
     def __init__(self,selected_instances):
@@ -116,9 +122,9 @@ class ReportGenerator:
         for single_value in self.selected_instances:
             total_max_humidity += single_value.max_humidity
         avg_max_humidity = total_max_humidity / total_count
-        print(f'Highest:{round(avg_max_temperature,3)}C')
-        print(f'Lowest:{round(avg_min_temperature,3)}C')
-        print(f'Humidity:{round(avg_max_humidity,3)}%')
+        print(f'Highest:{round(avg_max_temperature,2)}C')
+        print(f'Lowest:{round(avg_min_temperature,2)}C')
+        print(f'Humidity:{round(avg_max_humidity,2)}%')
 
     def task3(self):
         blue = '\033[34m'  # Blue color
@@ -152,22 +158,3 @@ class ReportGenerator:
                 print(f'{red}+{reset}',end='')
             print(f'{min_temperature}C-{max_temperature}C','\n')
 
-
-class Calculation:
-    def __init__(self,instance_record):
-        self.instance_record=instance_record
-        self.calculated_instance=[]
-
-    def year_calculation(self, year):
-        year = int(year) if len(year) == 4 else None
-        for instance in self.instance_record:
-            if instance.pkt.year == year:
-                self.calculated_instance.append(instance)
-        return self.calculated_instance
-    def monthly_calculation(self, year, month):
-        year = int(year) if len(year) == 4 else None
-        month = int(month) if len(month) == 2 else None
-        for instance in self.instance_record:
-            if (instance.pkt.month == month) & (instance.pkt.year == year):
-                self.calculated_instance.append(instance)
-        return self.calculated_instance
