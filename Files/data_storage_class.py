@@ -8,7 +8,9 @@ class InstanceRecord:
 
 instance_record=InstanceRecord()
 
-class StoreCalculateUserRecords:
+class WeatherRecords:
+    all_record_instance = []
+    user_required_instance = []
     def __init__(self, *args):
         self.pkt: date = datetime.strptime(args[0],'%Y-%m-%d').date() if args[0] and 10>=len(args[0])>5 else None
         self.max_temperature: int = int(args[1]) if args[1] is not None else None
