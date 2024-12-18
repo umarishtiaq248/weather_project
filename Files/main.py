@@ -20,12 +20,25 @@ def user_input(relative_path,*date_list):
 
 if __name__ == '__main__':
     path = sys.argv[1]
-    user_input_date=[]
-    for i in sys.argv[2:]:
-        if len(i) == 4:  # The string contains only the year
-            temp_date = datetime.strptime(i, "%Y").date()  # Only year
-            user_input_date.append((temp_date,"Y"))
-        else:  # The string contains year and month
-            temp_date = datetime.strptime(i, "%Y/%m").date()  # Year and month
-            user_input_date.append((temp_date,"M"))
-    user_input(path,*user_input_date)
+    user_input_flag_date=[]
+    skip_loop=False
+    for index in range(2,len(sys.argv[2:])+2):
+        if skip_loop:
+            skip_loop = False
+            continue
+        elif len(sys.argv[index])==2:
+            if len(sys.argv[index+1]) == 4:# The string contains only the year
+                temp_date = datetime.strptime(sys.argv[index+1], "%Y").date()  # Only year
+                user_input_flag_date.append((temp_date,sys.argv[index],"Y"))
+            else:  # The string contains year and month
+                temp_date = datetime.strptime(sys.argv[index+1], "%Y/%m").date()  # Year and month
+                user_input_flag_date.append((temp_date,sys.argv[index],"YM"))
+            skip_loop = True
+        else:
+            if len(sys.argv[index]) == 4:  # The string contains only the year
+                temp_date = datetime.strptime(sys.argv[index], "%Y").date()  # Only year
+                user_input_flag_date.append((temp_date, '-n', "Y"))
+            else:  # The string contains year and month
+                temp_date = datetime.strptime(sys.argv[index], "%Y/%m").date()  # Year and month
+                user_input_flag_date.append((temp_date, '-n', "YM"))
+    user_input(path,*user_input_flag_date)
