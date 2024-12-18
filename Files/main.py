@@ -1,22 +1,23 @@
 from  data_storage_class import *
 import sys
 from datetime import datetime,date
-instance_record=InstanceRecord()
 def user_input(relative_path,*date_list):
-    LoadReadAllRecords(relative_path,).read_path()
-    for single_instance in instance_record.all_record_instance:
-        single_instance.user_required_calculations(single_instance,*date_list)
-
-    report_generator=ReportGenerator(instance_record.user_required_instance)
-
-    print('Task 1\n')
-    report_generator.task1()
-    print('Task 2\n')
-    report_generator.task2()
-    print('Task 3\n')
-    report_generator.task3()
-    print('Task 4\n')
-    report_generator.task4()
+    WeatherRecords.load_path(relative_path)
+    for i in WeatherRecords.all_record_object:
+        print(i.PKT)
+    # for single_instance in instance_record.all_record_instance:
+    #     single_instance.user_required_calculations(single_instance,*date_list)
+    #
+    # report_generator=ReportGenerator(instance_record.user_required_instance)
+    #
+    # print('Task 1\n')
+    # report_generator.task1()
+    # print('Task 2\n')
+    # report_generator.task2()
+    # print('Task 3\n')
+    # report_generator.task3()
+    # print('Task 4\n')
+    # report_generator.task4()
 
 if __name__ == '__main__':
     path = sys.argv[1]

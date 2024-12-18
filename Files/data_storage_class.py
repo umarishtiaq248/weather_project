@@ -1,78 +1,63 @@
 import os
 from datetime import datetime,date
 
-
-class InstanceRecord:
-    all_record_instance=[]
-    user_required_instance = []
-
-instance_record=InstanceRecord()
-
 class WeatherRecords:
-    all_record_instance = []
-    user_required_instance = []
-    def __init__(self, *args):
-        self.pkt: date = datetime.strptime(args[0],'%Y-%m-%d').date() if args[0] and 10>=len(args[0])>5 else None
-        self.max_temperature: int = int(args[1]) if args[1] is not None else None
-        self.mean_temperature: int = int(args[2]) if args[2] is not None else None
-        self.min_temperature: int = int(args[3]) if args[3] is not None else None
-        self.max_dew_point: int = int(args[4]) if args[4] is not None else None
-        self.mean_dew_point: int = int(args[5]) if args[5] is not None else None
-        self.min_dew_point: int = int(args[6]) if args[6] is not None else None
-        self.max_humidity: int = int(args[7]) if args[7] is not None else None
-        self.mean_humidity: int = int(args[8]) if args[8] is not None else None
-        self.min_humidity: int = int(args[9]) if args[9] is not None else None
-        self.max_sea_level_pressure: float = float(args[10]) if args[10] is not None else None
-        self.mean_sea_level_pressure: float = float(args[11]) if args[11] is not None else None
-        self.min_sea_level_pressure: float = float(args[12]) if args[12] is not None else None
-        self.max_visibility: float = float(args[13]) if args[13] is not None else None
-        self.mean_visibility: float = float(args[14]) if args[14] is not None else None
-        self.min_visibility: float = float(args[15]) if args[15] is not None else None
-        self.max_wind_speed: int = int(args[16]) if args[16] is not None else None
-        self.mean_wind_speed: int = int(args[17]) if args[17] is not None else None
-        self.max_gust_speed: int = int(args[18]) if args[18] is not None else None
-        self.precipitation: float = float(args[19]) if args[19] is not None else None
-        self.cloud_cover: int = int(args[20]) if args[20] is not None else None
-        self.events: str = str(args[21]) if args[21] is not None else None
-        self.wind_dir_degrees: int = int(args[22]) if args[22] is not None else None
+    all_record_object = []
+    user_required_object = []
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            if key == 'PKT':  # Handle 'PKT' separately (as a date)
+                setattr(self, 'PKT', datetime.strptime(value, '%Y-%m-%d').date() if value and len(value) > 5 else None)
+            elif key == 'Events':  # Handle 'Events' as a string
+                setattr(self, 'Events', str(value) if value is not None else None)
+            else:  # Handle all other values as float
+                setattr(self, key, float(value) if value is not None else None)
 
-    def user_required_calculations(self,single_instance,*user_input_date):
-        for single_date in user_input_date:
-            try:
-                if single_date[1]=="Y":
-                    if single_date[0].year==single_instance.pkt.year:
-                        instance_record.user_required_instance.append(single_instance)
-                else:
-                    if (single_date[0].year==single_instance.pkt.year) and (single_date[0].month==single_instance.pkt.month):
-                        instance_record.user_required_instance.append(single_instance)
-            except AttributeError as e:
-                pass
-
-#load and read all record
-class LoadReadAllRecords:
-    def __init__(self,relative_path):
-        self.relative_path=relative_path
-        self.instance_record=instance_record
-    def read_path(self):
+    # def user_required_calculations(self,single_instance,*user_input_date):
+    #     for single_date in user_input_date:
+    #         try:
+    #             if single_date[1]=="Y":
+    #                 if single_date[0].year==single_instance.pkt.year:
+    #                     instance_record.user_required_instance.append(single_instance)
+    #             else:
+    #                 if (single_date[0].year==single_instance.pkt.year) and (single_date[0].month==single_instance.pkt.month):
+    #                     instance_record.user_required_instance.append(single_instance)
+    #         except AttributeError as e:
+    #             pass
+    #Store every line of file
+    @staticmethod
+    def store_data(single_line,heading):
+        record = single_line.split(',')
+        heading=heading.split(',')
+        record = [item.strip() for item in record]
+        heading = [item.strip() for item in heading]
+        if len(record) <= 1:
+            pass
+        else:
+            single_record = [None if item == '' else item for item in record]
+            temp_dic=dict(zip(heading, single_record))
+            temp_object = WeatherRecords(**temp_dic)
+            WeatherRecords.all_record_object.append(temp_object)
+    #Open every file to read the data
+    @staticmethod
+    def read_path(single_file_path):
+        if os.path.isfile(single_file_path):
+            with open(single_file_path, 'r') as report:
+                # Header line of every file
+                heading=report.readline()
+                for single_line in report:
+                    WeatherRecords.store_data(single_line,heading)
+    # Get folder path from user and make a list of abs path for all weather record file
+    @classmethod
+    def load_path(cls,relative_path):
         cwd=os.getcwd()
-        abs_path=os.path.join(cwd,self.relative_path)
+        abs_path=os.path.join(cwd,relative_path)
         files_list = os.listdir(abs_path)
         for file_name in files_list:
             single_file_path = os.path.join(abs_path, file_name)
-            if os.path.isfile(single_file_path):
-                with open(single_file_path, 'r') as report:
-                    # Header line of every file
-                    report.readline()
-                    for line in report:
-                        record = line.split(',')
-                        record = [item.strip() for item in record]
-                        if len(record) <= 1:
-                            continue
-                        else:
-                            updated_record = [None if item == '' else item for item in record]
-                            single_field_instance = StoreCalculateUserRecords(*updated_record)
-                            self.instance_record.all_record_instance.append(single_field_instance)
+            cls.read_path(single_file_path)
 
+#
 class ReportGenerator:
     def __init__(self,selected_instances):
         self.selected_instances=selected_instances
