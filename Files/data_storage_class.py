@@ -4,26 +4,32 @@ from datetime import datetime,date
 class WeatherRecords:
     all_record_object = []
     user_required_object = []
+    per_report_object=[]
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             if key == 'PKT':  # Handle 'PKT' separately (as a date)
-                setattr(self, 'PKT', datetime.strptime(value, '%Y-%m-%d').date() if value and len(value) > 5 else None)
+                setattr(self, 'PKT', datetime.strptime(value, '%Y-%m-%d').date() if value and 10 >= len(value) > 5 else None)
             elif key == 'Events':  # Handle 'Events' as a string
                 setattr(self, 'Events', str(value) if value is not None else None)
             else:  # Handle all other values as float
                 setattr(self, key, float(value) if value is not None else None)
+    @staticmethod
+    def required_objects_calculation(*user_input_date):
+        for single_date in user_input_date:
+            WeatherRecords.user_required_object.clear()
+            for single_object in WeatherRecords.all_record_object:
 
-    # def user_required_calculations(self,single_instance,*user_input_date):
-    #     for single_date in user_input_date:
-    #         try:
-    #             if single_date[1]=="Y":
-    #                 if single_date[0].year==single_instance.pkt.year:
-    #                     instance_record.user_required_instance.append(single_instance)
-    #             else:
-    #                 if (single_date[0].year==single_instance.pkt.year) and (single_date[0].month==single_instance.pkt.month):
-    #                     instance_record.user_required_instance.append(single_instance)
-    #         except AttributeError as e:
-    #             pass
+                try:
+                    if single_date[2]=="Y":
+                        if single_date[0].year==single_object.PKT.year:
+                            WeatherRecords.user_required_object.append(single_object)
+                        continue
+                    else:
+                        if (single_date[0].year==single_object.PKT.year) and (single_date[0].month==single_object.PKT.month):
+                            WeatherRecords.user_required_object.append(single_object)
+                except AttributeError as e:
+                    pass
+            WeatherRecords.per_report_object.append((single_date[2],WeatherRecords.user_required_object,))
     #Store every line of file
     @staticmethod
     def store_data(single_line,heading):

@@ -3,13 +3,12 @@ import sys
 from datetime import datetime,date
 def user_input(relative_path,*date_list):
     WeatherRecords.load_path(relative_path)
-    for i in WeatherRecords.all_record_object:
-        print(i.PKT)
-    # for single_instance in instance_record.all_record_instance:
-    #     single_instance.user_required_calculations(single_instance,*date_list)
-    #
-    # report_generator=ReportGenerator(instance_record.user_required_instance)
-    #
+    WeatherRecords.required_objects_calculation(*date_list)
+    for i,(flag,objects) in enumerate(WeatherRecords.per_report_object,start=1):
+        report_generator=ReportGenerator(objects)
+        print("Report ",i)
+        if (flag=="-e") or (flag=="-a") or (flag=="-c"):
+            pass
     # print('Task 1\n')
     # report_generator.task1()
     # print('Task 2\n')
