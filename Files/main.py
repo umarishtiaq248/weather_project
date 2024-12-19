@@ -7,16 +7,19 @@ def user_input(relative_path,*date_list):
     for i,(flag,objects) in enumerate(WeatherRecords.per_report_object,start=1):
         report_generator=ReportGenerator(objects)
         print("Report ",i)
-        if (flag=="-e") or (flag=="-a") or (flag=="-c"):
+        if flag=='-e':
+            print('Task 1')
+            report_generator.task1()
+        elif flag=='-a':
+            print('Task 2')
+            report_generator.task2()
+        elif flag=='-c':
+            print('Task 3')
+            report_generator.task3()
+            print('Task 4')
+            report_generator.task4()
+        else:
             pass
-    # print('Task 1\n')
-    # report_generator.task1()
-    # print('Task 2\n')
-    # report_generator.task2()
-    # print('Task 3\n')
-    # report_generator.task3()
-    # print('Task 4\n')
-    # report_generator.task4()
 
 if __name__ == '__main__':
     path = sys.argv[1]

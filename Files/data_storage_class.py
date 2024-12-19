@@ -7,12 +7,12 @@ class WeatherRecords:
     per_report_object=[]
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
-            if key == 'PKT':  # Handle 'PKT' separately (as a date)
-                setattr(self, 'PKT', datetime.strptime(value, '%Y-%m-%d').date() if value and 10 >= len(value) > 5 else None)
+            if key == 'PKT':  # Handle 'pkt' separately (as a date)
+                setattr(self, 'pkt', datetime.strptime(value.lower(), '%Y-%m-%d').date() if value and 10 >= len(value) > 5 else None)
             elif key == 'Events':  # Handle 'Events' as a string
-                setattr(self, 'Events', str(value) if value is not None else None)
+                setattr(self, 'events', str(value).replace(" ", "_").lower() if value is not None else None)
             else:  # Handle all other values as float
-                setattr(self, key, float(value) if value is not None else None)
+                setattr(self, key.replace(" ", "_").lower()[:-1], float(value) if value is not None else None)
     @staticmethod
     def required_objects_calculation(*user_input_date):
         for single_date in user_input_date:
@@ -21,15 +21,15 @@ class WeatherRecords:
 
                 try:
                     if single_date[2]=="Y":
-                        if single_date[0].year==single_object.PKT.year:
+                        if single_date[0].year==single_object.pkt.year:
                             WeatherRecords.user_required_object.append(single_object)
                         continue
                     else:
-                        if (single_date[0].year==single_object.PKT.year) and (single_date[0].month==single_object.PKT.month):
+                        if (single_date[0].year==single_object.pkt.year) and (single_date[0].month==single_object.pkt.month):
                             WeatherRecords.user_required_object.append(single_object)
                 except AttributeError as e:
                     pass
-            WeatherRecords.per_report_object.append((single_date[2],WeatherRecords.user_required_object,))
+            WeatherRecords.per_report_object.append((single_date[1],WeatherRecords.user_required_object,))
     #Store every line of file
     @staticmethod
     def store_data(single_line,heading):
@@ -85,15 +85,15 @@ class ReportGenerator:
                 min_temperature = single_value.min_temperature
 
         #for finding maximum humidity
-        max_humidity = self.selected_instances[0].max_humidity
-        max_humidity_date = self.selected_instances[0].pkt
+        max_humidit = self.selected_instances[0].max_humidit
+        max_humidit_date = self.selected_instances[0].pkt
         for single_value in self.selected_instances:
-            if single_value.max_humidity > max_humidity:
-                max_humidity_date = single_value.pkt
-                max_humidity = single_value.max_humidity
+            if single_value.max_humidit > max_humidit:
+                max_humidit_date = single_value.pkt
+                max_humidit = single_value.max_humidit
         print(f'Highest:{max_temperature}C on {max_temperature_date}')
         print(f'Lowest:{min_temperature}C on {min_temperature_date}')
-        print(f'Humidity:{max_humidity}% on {max_humidity_date}')
+        print(f'Humidity:{max_humidit}% on {max_humidit_date}')
 
     def task2(self):
         total_count = len(self.selected_instances)
@@ -111,13 +111,13 @@ class ReportGenerator:
         avg_min_temperature = total_min_temperature / total_count
 
         #for finding average maximum humidity
-        total_max_humidity = 0
+        total_max_humidit = 0
         for single_value in self.selected_instances:
-            total_max_humidity += single_value.max_humidity
-        avg_max_humidity = total_max_humidity / total_count
+            total_max_humidit += single_value.max_humidit
+        avg_max_humidit = total_max_humidit / total_count
         print(f'Highest:{round(avg_max_temperature,2)}C')
         print(f'Lowest:{round(avg_min_temperature,2)}C')
-        print(f'Humidity:{round(avg_max_humidity,2)}%')
+        print(f'Humidity:{round(avg_max_humidit,2)}%')
 
     def task3(self):
         blue = '\033[34m'  # Blue color
