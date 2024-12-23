@@ -137,11 +137,11 @@ class ReportGenerator:
             max_temperature = single_value.max_temperature
             min_temperature = single_value.min_temperature
             print(count, end="")
-            for i in range(max_temperature):
+            for i in range(int(max_temperature)):
                 print(f"{red}+{reset}", end="")
             print(max_temperature, "\n")
             print(count, end="")
-            for i in range(min_temperature):
+            for i in range(int(min_temperature)):
                 print(f"{blue}+{reset}", end="")
             print(min_temperature, "\n")
 
@@ -155,9 +155,9 @@ class ReportGenerator:
             max_temperature = single_value.max_temperature
             min_temperature = single_value.min_temperature
             print(count, end="")
-            for i in range(min_temperature):
+            for i in range(int(min_temperature)):
                 print(f"{blue}+{reset}", end="")
-            for i in range(max_temperature):
+            for i in range(int(max_temperature)):
                 print(f"{red}+{reset}", end="")
             print(f"{min_temperature}C-{max_temperature}C", "\n")
 
@@ -180,7 +180,7 @@ class ReportGenerator:
                 print("Task 4")
                 cls.task4(req_instances)
             else:
-                pass
+                print(f"No Flag found for report :{i}")
 
 
 class ArgumentParser:
